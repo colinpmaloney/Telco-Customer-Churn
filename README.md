@@ -19,11 +19,11 @@ This section documents the specific implementations and architecture that I will
 
 ## **1. Data Engineering & Pre-processing**
 *   **Source:** IBM Telco Customer Churn dataset.
-*   **Cleaning:** TBD
-*   **Pipeline:** TBD
+*   **Cleaning:** Handled empty string values in Total Charges.
+*   **Pipeline:** Implemented *One-Hot Encoding* for nomincal categorical features and *Mean Value Normalization* for numerical inputs
 
 ### **2. Model Architectures**
-*   **Baseline:** Logistic Regression with Regularization.
+*   **Baseline:** Logistic Regression with L2 Regularization.
 *   **Challenger:** 3-layer Neural Network
 
 ---
@@ -60,6 +60,12 @@ This section documents the reality of the comparison between the two models.
 ## **Key Takeaways**
 
 This section documents the specific key takeaways that I learned during my implementation and comparison.
+
+*Data Pre-Processing*
+- Ensuring that there are no NaN values is critical before running any model because those values with propogate through the math and the whole output will be NaN
+
+*Logistic Regression*
+- Implementing Feature Scaling allowed me to drastically increase my learning rate which allowed the model to learn with less iterations ( Quicker )
 
 ---
 
