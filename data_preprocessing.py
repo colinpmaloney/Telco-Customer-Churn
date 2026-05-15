@@ -30,7 +30,7 @@ def initialize_data():
         X[col] = (X[col] - X[col].mean()) / (X[col].max() - X[col].min())
 
     X = X.to_numpy()
-    y = y.to_numpy()
+    y = y.to_numpy().reshape(-1)
 
     w = np.zeros(X.shape[1])
     b = 0
