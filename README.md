@@ -67,6 +67,9 @@ This section documents the specific key takeaways that I learned during my imple
 *Logistic Regression*
 - Implementing Feature Scaling allowed me to drastically increase my learning rate which allowed the model to learn with less iterations ( Quicker )
 
+*General*
+- Using Vectorization significantly speeds up the computations.
+
 ---
 
 ### **How to Run**

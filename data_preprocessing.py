@@ -4,6 +4,7 @@ import pandas as pd
 
 def initialize_data():
     df = pd.read_csv("datasets/Telco-Customer-Churn.csv")
+    df.drop(columns=["customerID"], inplace=True)
 
     # Dealing with " " (Empty String) Fields
     df["TotalCharges"] = np.where(
@@ -11,29 +12,31 @@ def initialize_data():
     ).astype(float)
     df.dropna(subset=["TotalCharges"], inplace=True)
 
-    X: pd.DataFrame = df[df.columns[1:-1]]
-    y = df["Churn"]
-
     # One Hot Encoding
     one_hot_fields = ["gender", "Partner", "Dependents", "PhoneService",
                       "MultipleLines", "OnlineSecurity", "OnlineBackup",
                       "DeviceProtection", "TechSupport", "StreamingTV",
                       "StreamingMovies", "PaperlessBilling",
-                      "InternetService", "Contract", "PaymentMethod"]
-    X = pd.get_dummies(X, columns=one_hot_fields,
-                       drop_first=True, dtype=np.int8)
-    y = pd.get_dummies(y, drop_first=True, dtype=np.int8)
+                      "InternetService", "Contract", "PaymentMethod", "Churn"]
+    df = pd.get_dummies(df, columns=one_hot_fields,
+                        drop_first=True, dtype=np.int8)
 
     # Mean Value Normalization
     normalize_columns = ["TotalCharges", "MonthlyCharges", "tenure"]
     for col in normalize_columns:
-        X[col] = (X[col] - X[col].mean()) / (X[col].max() - X[col].min())
+        df[col] = (df[col] - df[col].mean()) / (df[col].max() - df[col].min())
 
-    X = X.to_numpy()
-    y = y.to_numpy().reshape(-1)
+    # Create a 80/20 Train/Test split
+    train_df = df.sample(frac=0.8, random_state=817)
+    test_df = df.drop(train_df.index)
 
-    w = np.zeros(X.shape[1])
+    X_train = train_df.drop(columns=["Churn_Yes"]).to_numpy()
+    y_train = train_df["Churn_Yes"].to_numpy()
+
+    X_test = test_df.drop(columns=["Churn_Yes"]).to_numpy()
+    y_test = test_df["Churn_Yes"].to_numpy()
+
+    w = np.zeros(X_train.shape[1])
     b = 0
 
-    return (X, y, w, b)
-
+    return (X_train, y_train, X_test, y_test, w, b)
