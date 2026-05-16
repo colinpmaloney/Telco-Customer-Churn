@@ -66,6 +66,7 @@ def gradient_descent(X, y, w, b, lambda_, alpha, iters):
 
 # Vectorized Implementations Below
 
+
 def cost_function_vectorized(X, y, w, b, lambda_):
     m, n = X.shape
 
@@ -101,9 +102,7 @@ def compute_gradient_vectorized(X, y, w, b, lambda_):
 def gradient_descent_vectorized(X, y, w, b, lambda_, alpha, iters):
     m, n = X.shape
 
-    j_history = []
     for iter in range(iters):
-        j_history.append(cost_function_vectorized(X, y, w, b, lambda_))
         dj_dw, dj_db = compute_gradient_vectorized(X, y, w, b, lambda_)
         w -= alpha * dj_dw
         b -= alpha * dj_db
@@ -111,4 +110,4 @@ def gradient_descent_vectorized(X, y, w, b, lambda_, alpha, iters):
     print(f"w: {w}")
     print(f"b: {b}")
 
-    return (w, b, j_history)
+    return (w, b)

@@ -2,27 +2,29 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from data_preprocessing import initialize_data
+from data_processing import initialize_data, visualize_data, create_model
 from logistic_regression import gradient_descent_vectorized, sigmoid
 
-ITERS = 10000
-LAMBDA = 0.0001
-ALPHA = 1
+LR_ITERS = 10000
+LR_LAMBDA = 0.0001
+LR_ALPHA = 1
 
-X_train, y_train, X_test, y_test, w, b = initialize_data()
-
-w, b, j_history = gradient_descent_vectorized(
-    X_train, y_train, w, b, lambda_=LAMBDA, alpha=ALPHA, iters=ITERS)
+NN_ITERS = 100
+NN_ALPHA = 0.001
 
 
-fig, ax = plt.subplots(2, 1, figsize=(18, 6))
-ax[0].plot(range(ITERS), j_history, label="Cost")
-ax[0].set_title(f"Cost over {ITERS} iterations")
+if __name__ == "__main__":
+    X_train, y_train, X_test, y_test, w, b = initialize_data()
+    w, b = gradient_descent_vectorized(
+        X_train, y_train, w, b, lambda_=LR_LAMBDA, alpha=LR_ALPHA, iters=LR_ITERS
+    )
+    log_predictions = sigmoid(np.dot(X_test, w) + b)
 
+    X_train, y_train, X_test, y_test, w, b = initialize_data()
+    model = create_model(
+        X_test, y_test, X_train, y_train,
+        epochs=NN_ITERS, alpha=NN_ALPHA
+    )
+    nn_predictions = model.predict(X_test)
 
-predictions = np.where(sigmoid(np.dot(X_test, w) + b) >= 0.5, .9, 0.1)
-
-ax[1].scatter(range(len(predictions)), predictions, label="Predictions", c='b')
-ax[1].scatter(range(len(predictions)), y_test, label="Reality", c='r')
-
-plt.show()
+    visualize_data(y_test, log_predictions, nn_predictions)

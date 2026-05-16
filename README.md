@@ -67,6 +67,11 @@ This section documents the specific key takeaways that I learned during my imple
 *Logistic Regression*
 - Implementing Feature Scaling allowed me to drastically increase my learning rate which allowed the model to learn with less iterations ( Quicker )
 
+*Neural Network*
+- Using Non-Linear relu functions does not always make an immediate impact in the performance.
+- As I increased the units per layer and layer count there was an increase in accuracy however the validation_data had a decrease in accuracy - *Over Fitting* occured.
+
+
 *General*
 - Using Vectorization significantly speeds up the computations.
 
