@@ -32,6 +32,14 @@ This section documents the specific implementations and architecture that I will
 
 This section documents the specific "moves" I made to optimize performance and handle over-fitting.
 
+*Logarithmic Regression*
+- Tuned the alpha parameter
+- Implemented L2 Regularization
+
+*Neural Network*
+- Implemented early stopping to ensure I choose the training epoch with the best parameters
+- Implemented L2 Regularization
+
 ### **Hyperparameter Showdown**
 
 | Parameter | Logistic Regression | Neural Network |
@@ -70,6 +78,7 @@ This section documents the specific key takeaways that I learned during my imple
 *Neural Network*
 - Using Non-Linear relu functions does not always make an immediate impact in the performance.
 - As I increased the units per layer and layer count there was an increase in accuracy however the validation_data had a decrease in accuracy - *Over Fitting* occured.
+- Using Early Stop will allow you to take the most accurate training epoch
 
 
 *General*
