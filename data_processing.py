@@ -3,9 +3,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
-import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
 
 
 def initialize_data():
@@ -18,6 +15,8 @@ def initialize_data():
     ).astype(float)
     df.dropna(subset=["TotalCharges"], inplace=True)
 
+    df = df.reset_index(drop=True)
+
     # One Hot Encoding
     one_hot_fields = ["gender", "Partner", "Dependents", "PhoneService",
                       "MultipleLines", "OnlineSecurity", "OnlineBackup",
@@ -27,20 +26,27 @@ def initialize_data():
     df = pd.get_dummies(df, columns=one_hot_fields,
                         drop_first=True, dtype=np.int8)
 
-    # Mean Value Normalization
-    normalize_columns = ["TotalCharges", "MonthlyCharges", "tenure"]
-    for col in normalize_columns:
-        df[col] = (df[col] - df[col].mean()) / (df[col].max() - df[col].min())
-
     # Create a 80/20 Train/Test split
     train_df = df.sample(frac=0.8, random_state=817)
     test_df = df.drop(train_df.index)
 
-    X_train = train_df.drop(columns=["Churn_Yes"]).to_numpy()
+    X_train = train_df.drop(columns=["Churn_Yes"])
     y_train = train_df["Churn_Yes"].to_numpy()
 
-    X_test = test_df.drop(columns=["Churn_Yes"]).to_numpy()
+    X_test = test_df.drop(columns=["Churn_Yes"])
     y_test = test_df["Churn_Yes"].to_numpy()
+
+    # Z-Score Normalization
+    normalize_columns = ["TotalCharges", "MonthlyCharges", "tenure"]
+    for col in normalize_columns:
+        train_mean = X_train[col].mean()
+        train_std = X_train[col].std()
+
+        X_train[col] = (X_train[col] - train_mean) / train_std
+        X_test[col] = (X_test[col] - train_mean) / train_std
+
+    X_train = X_train.to_numpy()
+    X_test = X_test.to_numpy()
 
     w = np.zeros(X_train.shape[1])
     b = 0
@@ -74,26 +80,6 @@ def visualize_data_individually(y_test, predictions, model_name, threshold=0.5):
 
     plt.tight_layout()
     plt.show()
-
-def create_model(X_test, y_test, X_train, y_train, epochs, alpha):
-    model = Sequential([
-        tf.keras.Input(shape=(30,)),
-        # Dense(units=100, activation="relu"),
-        # Dense(units=50, activation="relu"),
-        Dense(units=3, activation="relu"),
-        Dense(units=1, activation="sigmoid"),
-    ],
-        name="Churn-Model"
-    )
-
-    model.compile(
-        loss=tf.keras.losses.BinaryCrossentropy(),
-        optimizer=tf.keras.optimizers.Adam(alpha)
-    )
-
-    model.fit(X_train, y_train, epochs=epochs, validation_data=(X_test, y_test))
-
-    return model
 
 
 def visualize_data(y_test, log_predictions, nn_predictions, threshold=0.5):
