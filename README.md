@@ -56,6 +56,7 @@ Input (30 features)
 | EarlyStopping (patience=15) | ✅ Improved | Restores best weights; cut training time from ~12s to ~3-5s |
 | L2 Regularization (λ=0.001) | ✅ Improved | Penalizes large weights; prevents overfitting |
 | Dropout reduction 0.3 → 0.1 | ✅ Improved | L2 was already regularizing; stacking both over-regularized the model |
+| Feature Engineering | ✅ Improved | Applied weights to CoreServiceCounts, StreamingServiceCounts, and InternetServiceCounts |
 | Z-Score normalization | ✅ Improved | More stable gradient flow than range normalization |
 | Threshold tuning (0.5 → 0.57) | ✅ Improved | Reduced false positives (predicting churn when customer actually stayed) |
 | ReduceLROnPlateau | ❌ Reverted | Caused model to overtrain past its best checkpoint |
@@ -69,9 +70,9 @@ Input (30 features)
 
 | Metric | Logistic Regression | Neural Network |
 | :--- | :--- | :--- |
-| **Accuracy** | ~0.80 | ~0.78 |
-| **F1-Score** | ~0.54 | ~0.60 |
-| **Training Latency** | ~1.3s | ~5.1s |
+| **Accuracy** | ~0.80 | ~0.79 |
+| **F1-Score** | ~0.54 | ~0.64 |
+| **Training Latency** | ~0.9s | ~4.5s |
 | **Model Cost (J)** | ~0.42 | ~0.52 |
 
 ### **The Verdict**

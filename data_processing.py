@@ -23,6 +23,33 @@ def initialize_data():
     df = pd.get_dummies(df, columns=one_hot_fields,
                         drop_first=True, dtype=np.int8)
 
+    # Feature Engineering
+    df["CoreProductsCount"] = (
+        1 - df["InternetService_No"]) + df["PhoneService_Yes"]
+
+    internet_addons = [
+        "OnlineSecurity_Yes", "TechSupport_Yes",
+        "DeviceProtection_Yes", "OnlineBackup_Yes"
+    ]
+    df["InternetAddonsCount"] = df[internet_addons].sum(axis=1)
+
+    df["Unprotected"] = (
+        (df["OnlineSecurity_Yes"] == 0) &
+        (df["TechSupport_Yes"] == 0)
+    ).astype(int)
+
+    df["Relationships"] = (
+        (df["Partner_Yes"] == 1) |
+        (df["Dependents_Yes"] == 1)
+    ).astype(np.int8)
+
+    df["IsHighRisk"] = (
+        (df["MonthlyCharges"] >= 70) &
+        (df["tenure"] <= 12) &
+        (df["Contract_Two year"] == 0) &
+        (df["CoreProductsCount"] == 2) 
+    ).astype(np.int8)
+
     # Create a 80/20 Train/Test split
     train_df = df.sample(frac=0.8, random_state=817)
     test_df = df.drop(train_df.index)
@@ -34,7 +61,11 @@ def initialize_data():
     y_test = test_df["Churn_Yes"].to_numpy()
 
     # Z-Score Normalization
-    normalize_columns = ["TotalCharges", "MonthlyCharges", "tenure"]
+    normalize_columns = [
+        "TotalCharges", "MonthlyCharges", "tenure",
+        "CoreProductsCount", "InternetAddonsCount"
+    ]
+
     for col in normalize_columns:
         train_mean = X_train[col].mean()
         train_std = X_train[col].std()
