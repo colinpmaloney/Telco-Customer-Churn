@@ -13,12 +13,11 @@ early_stop = EarlyStopping(
     restore_best_weights=True
 )
 
-
 def create_model(X_test, y_test, X_train, y_train, epochs, alpha, lambda_):
     model = Sequential([
         tf.keras.Input(shape=(30,)),
         Dense(units=64, activation="relu", kernel_regularizer=l2(lambda_)),
-        Dropout(0.3),
+        Dropout(0.1),
         Dense(units=32, activation="relu", kernel_regularizer=l2(lambda_)),
         Dropout(0.1),
         Dense(units=1, activation="sigmoid"),
