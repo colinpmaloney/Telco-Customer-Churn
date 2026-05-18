@@ -17,9 +17,13 @@ NN_ITERS = 300
 NN_ALPHA = 0.001
 NN_LAMBDA = 0.001
 
+DEV_MODE = False
 
 if __name__ == "__main__":
-    X_train, y_train, X_test, y_test, w, b = initialize_data()
+    # ADD CV stfuf
+    X_train, y_train, X_cv, y_cv, X_test, y_test, w, b = initialize_data()
+    X_set = X_cv if DEV_MODE else X_test
+    y_set = y_cv if DEV_MODE else y_test
 
     # --- Logistic Regression ---
     lr_start = time.time()
@@ -28,11 +32,11 @@ if __name__ == "__main__":
     )
     lr_latency = time.time() - lr_start
 
-    log_predictions = sigmoid(np.dot(X_test, w) + b)
+    log_predictions = sigmoid(np.dot(X_set, w) + b)
     log_y_hat = (log_predictions >= THRESHOLD).astype(int)
-    lr_accuracy = accuracy_score(y_test, log_y_hat)
-    lr_f1 = f1_score(y_test, log_y_hat)
-    lr_cost_j = cost_function_vectorized(X_test, y_test, w, b, LR_LAMBDA)
+    lr_accuracy = accuracy_score(y_set, log_y_hat)
+    lr_f1 = f1_score(y_set, log_y_hat)
+    lr_cost_j = cost_function_vectorized(X_set, y_set, w, b, LR_LAMBDA)
 
     print("\n========== Logistic Regression Metrics ==========")
     print(f"  Accuracy:          {lr_accuracy:.4f}")
@@ -44,15 +48,15 @@ if __name__ == "__main__":
     # --- Neural Network ---
     nn_start = time.time()
     model, history = create_model(
-        X_test, y_test, X_train, y_train,
+        X_cv, y_cv, X_train, y_train,
         epochs=NN_ITERS, alpha=NN_ALPHA, lambda_=NN_LAMBDA
     )
     nn_latency = time.time() - nn_start
 
-    nn_predictions = model.predict(X_test)
+    nn_predictions = model.predict(X_set)
     nn_y_hat = (nn_predictions >= THRESHOLD).astype(int)
-    nn_accuracy = accuracy_score(y_test, nn_y_hat)
-    nn_f1 = f1_score(y_test, nn_y_hat)
+    nn_accuracy = accuracy_score(y_set, nn_y_hat)
+    nn_f1 = f1_score(y_set, nn_y_hat)
     nn_cost_j = history.history["val_loss"][-1]
 
     print("\n========== Neural Network Metrics ==========")
@@ -62,4 +66,4 @@ if __name__ == "__main__":
     print(f"  Model Cost (J):    {nn_cost_j:.4f}")
     print("============================================\n")
 
-    visualize_data(y_test, log_predictions, nn_predictions, threshold=THRESHOLD)
+    visualize_data(y_set, log_predictions, nn_predictions, threshold=THRESHOLD)

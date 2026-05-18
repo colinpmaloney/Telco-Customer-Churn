@@ -47,15 +47,20 @@ def initialize_data():
         (df["MonthlyCharges"] >= 70) &
         (df["tenure"] <= 12) &
         (df["Contract_Two year"] == 0) &
-        (df["CoreProductsCount"] == 2) 
+        (df["CoreProductsCount"] == 2)
     ).astype(np.int8)
 
-    # Create a 80/20 Train/Test split
+    # Create a 80/10/10 Train / CV / Test split
     train_df = df.sample(frac=0.8, random_state=817)
-    test_df = df.drop(train_df.index)
+    remaining_df = df.drop(train_df.index)
+    cv_df = remaining_df.sample(frac=0.5, random_state=817)
+    test_df = remaining_df.drop(cv_df.index)
 
     X_train = train_df.drop(columns=["Churn_Yes"])
     y_train = train_df["Churn_Yes"].to_numpy()
+
+    X_cv = cv_df.drop(columns=["Churn_Yes"])
+    y_cv = cv_df["Churn_Yes"].to_numpy()
 
     X_test = test_df.drop(columns=["Churn_Yes"])
     y_test = test_df["Churn_Yes"].to_numpy()
@@ -71,12 +76,15 @@ def initialize_data():
         train_std = X_train[col].std()
 
         X_train[col] = (X_train[col] - train_mean) / train_std
+        X_cv[col] = (X_cv[col] - train_mean) / train_std
         X_test[col] = (X_test[col] - train_mean) / train_std
 
     X_train = X_train.to_numpy()
+    X_cv = X_cv.to_numpy()
     X_test = X_test.to_numpy()
+
 
     w = np.zeros(X_train.shape[1])
     b = 0
 
-    return (X_train, y_train, X_test, y_test, w, b)
+    return (X_train, y_train, X_cv, y_cv, X_test, y_test, w, b)

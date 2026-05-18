@@ -20,7 +20,7 @@ Using the **IBM Telco Customer Churn** dataset, I am predicting whether a custom
 *   **Cleaning:** Handled empty string values in `TotalCharges` (converted to NaN, dropped).
 *   **Encoding:** One-Hot Encoding for 15 nominal categorical features.
 *   **Normalization:** Z-Score normalization `(x - mean) / std` for the 3 numerical features (`TotalCharges`, `MonthlyCharges`, `tenure`). Z-score was chosen over range normalization because it guarantees unit variance regardless of original scale, giving gradient descent smoother loss contours.
-*   **Split:** 80/20 train/test (`random_state=817`). All normalization statistics are computed on the training set only to prevent data leakage.
+*   **Split:** 80/10/10 train/cv/test (`random_state=817`). All normalization statistics are computed on the training set only to prevent data leakage. Cross Validation set was used to prevent overfitting the training & testing set.
 
 ### **2. Model Architectures**
 *   **Baseline:** Logistic Regression with L2 Regularization (vectorized NumPy implementation).
@@ -32,8 +32,10 @@ Input (30 features)
 ├─ Dropout(0.1)
 ├─ Dense(32, ReLU) + L2
 ├─ Dropout(0.1)
-└─ Dense(1, Sigmoid)
+└─ Dense(1, Linear)
 ```
+Loss Function: Binary Cross-Entropy
+Optimizer: Adam
 
 ---
 
